@@ -1,0 +1,58 @@
+name: Go package
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15.2-alpine
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: rizkia
+          POSTGRES_PASSWORD: 21204444
+          POSTGRES_DB: bookskette
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.19
+      id: go
+
+    - name: Check out code into the Go module directiory
+      uses: actions/checkout@v3
+
+    # - name: install migrate golang
+    # # | digunakan untuk membuat multiple line command
+    # # download migrate lalu unzip dan pindahkan ke usr/bin dan ubah namanya menjadi migrate
+    #   run: |
+    #    curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.2/migrate.linux-amd64.tar.gz | tar xvz
+    #    sudo mv migrate /usr/bin
+    #    which migrate
+
+    # setelah mengecek go, kita bisa melakukan migrate up
+    - name: Jalankan migrasi up
+      run: make migup
+
+    - name: Test
+      run: make test
