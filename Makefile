@@ -35,6 +35,6 @@ sqlc:
 	sqlc generate
 
 test:
-	go test -v
+	go test -v ./db/sqlc
 
 .PHONY: pg createdb deletedb miginit migupdate mignew migup migdown migforce sqlcwipe sqlcinit sqlc test
